@@ -14,8 +14,16 @@ namespace Vidly.Controllers.api
         public MoviesController()
         {
             _context = new ApplicationDbContext();
+            
         }
 
+        [HttpGet]
+        [Route("movies/released/{year}/{month:regex(\\d{2}):range(1,12)}")]
+        public IHttpActionResult ByReleaseYear(int year, int month)
+        {
+            var movies = _context.Movies.Where(m => m.ReleaseDate.Year == year && m.ReleaseDate.Month == month).ToList();
+            return Ok(movies);
+        }
         // GET api/movies
         [Authorize(Roles = RoleName.CanManageMovies)]
         public IHttpActionResult GetMovies(string query = null)
