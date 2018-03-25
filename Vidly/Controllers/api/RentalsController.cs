@@ -18,6 +18,7 @@ namespace Vidly.Controllers.api
             _context = new ApplicationDbContext();
         }
 
+        [ActionName("CreateNewRentals")]
         [HttpPost]
         public IHttpActionResult CreateNewRentals(NewRentalDto newRentlDto)
         {
@@ -32,7 +33,12 @@ namespace Vidly.Controllers.api
                 {
                     return BadRequest("Movie is unavailable.");
                 }
-                
+
+                if (_context.Rentals.Any(r => r.Movie.Id == movie.Id && r.Customer.Id == customer.Id))
+                {
+                    return BadRequest("This customer already has this movie rented.");
+                }
+
                 movie.NumberAvailable--;
 
                 _context.Rentals.Add(new Rental
@@ -46,6 +52,38 @@ namespace Vidly.Controllers.api
             _context.SaveChanges();
 
             return Ok();
+        }
+        [ActionName("CheckInRental")]
+        [HttpPost]
+        public IHttpActionResult CheckInRental(NewRentalDto newRentlDto)
+        {
+            var foundRentalCount = 0;
+
+            var customer = _context.Customers.Single(c => c.Id == newRentlDto.CustomerId);
+
+            var movies = _context.Movies.Where(m => newRentlDto.MovieIds.Contains(m.Id)).ToList();
+
+            foreach (var movie in movies)
+            {
+                var rental = _context.Rentals.SingleOrDefault(r => r.Customer.Id == customer.Id && r.Movie.Id == movie.Id);
+
+                if (rental != null)
+                {
+                    foundRentalCount++;
+                    _context.Rentals.Remove(rental);
+                    movie.NumberAvailable++;
+                }
+               
+            }
+
+            if (foundRentalCount > 0)
+            {
+                _context.SaveChanges();
+
+                return Ok();
+            }
+
+            return NotFound();
         }
     }
 }

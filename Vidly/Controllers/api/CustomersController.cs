@@ -22,13 +22,19 @@ namespace Vidly.Controllers.api
 
         // GET api/customers
         
-        public IHttpActionResult GetCustomers(string query = null)
+        public IHttpActionResult GetCustomers(string query = null, bool customersWithRentals = false)
         {
             var customersQuery =_context.Customers.Include(c => c.MembershipType);
 
             if (!string.IsNullOrWhiteSpace(query))
             {
                 customersQuery = customersQuery.Where(c => c.Name.Contains(query));
+            }
+
+            if (customersWithRentals)
+            {
+                var rentalsCustomerId = _context.Rentals.Select(r => r.Customer.Id);
+                customersQuery = customersQuery.Where(c => rentalsCustomerId.Contains(c.Id));
             }
 
             var customerDtos = customersQuery.ToList().Select(Mapper.Map<Customer, CustomerDto>);

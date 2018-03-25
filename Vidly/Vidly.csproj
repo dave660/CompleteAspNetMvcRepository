@@ -224,6 +224,7 @@
     <Compile Include="Controllers\api\MoviesController.cs" />
     <Compile Include="Controllers\api\NewRentalsController.cs" />
     <Compile Include="Controllers\RentalsController.cs" />
+    <Compile Include="CustomAuthorizeAttribute.cs" />
     <Compile Include="Dtos\NewRentalDto.cs" />
     <Compile Include="Controllers\api\RentalsController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
@@ -711,6 +712,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Rentals\New.cshtml" />
     <Content Include="Views\Movies\Test.cshtml" />
+    <Content Include="Views\Rentals\Checkin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />

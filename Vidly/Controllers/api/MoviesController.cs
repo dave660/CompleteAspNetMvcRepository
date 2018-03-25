@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Vidly.Dtos;
 using Vidly.Models;
@@ -17,6 +19,16 @@ namespace Vidly.Controllers.api
             
         }
 
+        public async Task<IHttpActionResult> TestMethodAsync()
+        {
+            await TestingAMethodAsync();
+            return Ok();
+        }
+
+        private Task TestingAMethodAsync()
+        {
+            return Task.Run(() => Thread.Sleep(500));
+        }
         [HttpGet]
         [Route("movies/released/{year}/{month:regex(\\d{2}):range(1,12)}")]
         public IHttpActionResult ByReleaseYear(int year, int month)
@@ -26,9 +38,18 @@ namespace Vidly.Controllers.api
         }
         // GET api/movies
         [Authorize(Roles = RoleName.CanManageMovies)]
-        public IHttpActionResult GetMovies(string query = null)
+        public IHttpActionResult GetMovies(string query = null, bool checkNumberAvailable = false)
         {
-            var moviesQuery = _context.Movies.Include("Genre").Where(m => m.NumberAvailable > 0);
+            IQueryable<Movie> moviesQuery;
+
+            if (checkNumberAvailable)
+            {
+                moviesQuery = _context.Movies.Include("Genre").Where(m => m.NumberAvailable > 0);
+            }
+            else
+            {
+                moviesQuery = _context.Movies.Include("Genre");
+            }
 
             if (!string.IsNullOrWhiteSpace(query))
             {
@@ -38,6 +59,7 @@ namespace Vidly.Controllers.api
             var movies = moviesQuery.ToList().Select(Mapper.Map<Movie, MovieDto>); 
             return Ok(movies);
         }
+
 
         // GET api/movies/1
         [Authorize(Roles = RoleName.CanManageMovies)]

@@ -7,3 +7,16 @@
 }
 
 <h2>title</h2>
+
+@section scripts
+{
+    $(document).ready(function () {
+        $.ajax({
+        url: "/api/Movies/TestMethodAsync",
+        method: "get",
+        }).done(function() {
+        toastr.success("Method was successful.");
+        }
+    }
+}
+

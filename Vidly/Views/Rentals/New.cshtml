@@ -96,7 +96,7 @@
            var validator = $("#newRental").validate({
                 submitHandler: function() {
                     $.ajax({
-                        url: "/api/Rentals",
+                        url: "/api/Rentals/CreateNewRentals",
                         method: "post",
                         data: vm
                     }).done(function() {
@@ -109,8 +109,8 @@
                         vm = { movieIds: [] };
                         validator.resetForm();
 
-                    }).fail(function() {
-                        toastr.error("Something unexpected happened.");
+                        }).fail(function (jqXhr, textStatus, error) {
+                            toastr.error(jqXhr.responseText);
                         });
 
                     return false;
